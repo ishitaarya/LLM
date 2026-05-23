@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NexusAI</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #0f172a;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 700px;
+      background: #1e293b;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.4);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #38bdf8;
+    }
+
+    textarea {
+      width: 100%;
+      height: 140px;
+      padding: 15px;
+      border: none;
+      border-radius: 10px;
+      resize: none;
+      font-size: 16px;
+      outline: none;
+      margin-bottom: 15px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      background: #38bdf8;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #0ea5e9;
+    }
+
+    .response-box {
+      margin-top: 20px;
+      background: #334155;
+      padding: 15px;
+      border-radius: 10px;
+      min-height: 100px;
+      white-space: pre-wrap;
+      line-height: 1.6;
+    }
+
+    .loading {
+      color: #facc15;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <h1>NexusAI Tutor</h1>
+
+    <textarea id="prompt" placeholder="Ask anything..."></textarea>
+
+    <button onclick="sendPrompt()">Generate Response</button>
+
+    <div class="response-box" id="response">
+      AI response will appear here...
+    </div>
+  </div>
+
+  <script>
+    async function sendPrompt() {
+
+      const prompt = document.getElementById("prompt").value;
+      const responseBox = document.getElementById("response");
+
+      if (!prompt.trim()) {
+        responseBox.innerHTML = "Please enter a prompt.";
+        return;
+      }
+
+      responseBox.innerHTML = "<span class='loading'>Generating response...</span>";
+
+      try {
+
+        // Replace with your backend URL
+        const res = await fetch("http://127.0.0.1:8000/run_task/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            user_prompt: prompt
+          })
+        });
+
+        const data = await res.json();
+
+        if (data.response) {
+          responseBox.innerHTML = data.response;
+        } else {
+          responseBox.innerHTML = "Error: " + data.error;
+        }
+
+      } catch (error) {
+        responseBox.innerHTML = "Failed to connect to backend.";
+      }
+    }
+  </script>
+
+</body>
+</html>
